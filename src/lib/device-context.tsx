@@ -103,9 +103,11 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
     loadData();
   }, [user]);
 
+  const deviceId = device?.id;
+  
   // Simulation loop
   useEffect(() => {
-    if (isDemoMode && isSimulating && device && user) {
+    if (isDemoMode && isSimulating && deviceId && user) {
       intervalRef.current = setInterval(async () => {
         const r = generateReading();
         
@@ -121,7 +123,7 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
         // For this demo, let's just insert
         await supabase.from('readings').insert({
           user_id: user.id,
-          device_id: device.id,
+          device_id: deviceId,
           timestamp: r.timestamp,
           heart_rate: r.heartRate,
           temperature: r.temperature,
@@ -129,21 +131,21 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
         });
 
         // 3. Update device last sync/battery periodically (every 5 readings)
-        if (Math.random() > 0.8) {
+        if (Math.random() > 0.8 && device) {
           await supabase.from('devices').update({
             battery_level: device.batteryLevel - 0.02,
             last_sync: new Date().toISOString(),
-          }).eq('id', device.id);
+          }).eq('id', deviceId);
         }
       }, 5000); // 5 seconds interval for DB sanity
       
       return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
     }
-  }, [isDemoMode, isSimulating, device, user]);
+  }, [isDemoMode, isSimulating, deviceId, user]);
 
   // Firebase IoT data loop
   useEffect(() => {
-    if (!isDemoMode && isSimulating && device && user) {
+    if (!isDemoMode && isSimulating && deviceId && user) {
       const bpmRef = query(ref(rtdb, 'bpm'), limitToLast(1));
       const tempRef = query(ref(rtdb, 'temperature'), limitToLast(1));
 
@@ -186,7 +188,7 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
         unsubTemp();
       };
     }
-  }, [isDemoMode, isSimulating, device, user]);
+  }, [isDemoMode, isSimulating, deviceId, user]);
 
   const pairDevice = useCallback(async (serial: string) => {
     if (!user) {
