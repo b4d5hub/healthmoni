@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './auth-context';
+import { rtdb } from './firebase-client';
+import { ref, onValue, query, limitToLast } from 'firebase/database';
 
 export interface Reading {
   timestamp: number;
@@ -24,6 +26,8 @@ interface DeviceContextType {
   pairDevice: (serial: string) => Promise<void>;
   unpairDevice: () => Promise<void>;
   isSimulating: boolean;
+  isDemoMode: boolean;
+  setIsDemoMode: (val: boolean) => void;
 }
 
 const DeviceContext = createContext<DeviceContextType | null>(null);
@@ -41,6 +45,7 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
   const [device, setDevice] = useState<Device | null>(null);
   const [readings, setReadings] = useState<Reading[]>([]);
   const [isSimulating, setIsSimulating] = useState(false);
+  const [isDemoMode, setIsDemoMode] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const { user } = useAuth();
 
@@ -100,7 +105,7 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
 
   // Simulation loop
   useEffect(() => {
-    if (isSimulating && device && user) {
+    if (isDemoMode && isSimulating && device && user) {
       intervalRef.current = setInterval(async () => {
         const r = generateReading();
         
@@ -134,7 +139,54 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
       
       return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
     }
-  }, [isSimulating, device, user]);
+  }, [isDemoMode, isSimulating, device, user]);
+
+  // Firebase IoT data loop
+  useEffect(() => {
+    if (!isDemoMode && isSimulating && device && user) {
+      const bpmRef = query(ref(rtdb, 'bpm'), limitToLast(1));
+      const tempRef = query(ref(rtdb, 'temperature'), limitToLast(1));
+
+      let currentBpm = readings.length > 0 ? readings[readings.length - 1].heartRate : 70;
+      let currentTemp = readings.length > 0 ? readings[readings.length - 1].temperature : 36.5;
+
+      const pushReading = (bpm: number, temp: number) => {
+        const newReading: Reading = {
+          timestamp: Date.now(),
+          heartRate: bpm,
+          temperature: temp,
+          hrv: Math.round(35 + Math.random() * 40), // Keep HRV simulated as it's not in DB yet
+        };
+        setReadings(prev => [...prev.slice(-1000), newReading]);
+        setDevice(prev => prev ? { ...prev, lastSync: Date.now() } : null);
+      };
+
+      const unsubBpm = onValue(bpmRef, (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+          const val = childSnapshot.val();
+          if (val && typeof val.bpm === 'number') {
+            currentBpm = val.bpm;
+            pushReading(currentBpm, currentTemp);
+          }
+        });
+      });
+
+      const unsubTemp = onValue(tempRef, (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+          const val = childSnapshot.val();
+          if (val && typeof val.temperature === 'number') {
+            currentTemp = parseFloat(val.temperature.toFixed(1));
+            pushReading(currentBpm, currentTemp);
+          }
+        });
+      });
+
+      return () => {
+        unsubBpm();
+        unsubTemp();
+      };
+    }
+  }, [isDemoMode, isSimulating, device, user]);
 
   const pairDevice = useCallback(async (serial: string) => {
     if (!user) {
@@ -191,7 +243,7 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
   const latestReading = readings.length > 0 ? readings[readings.length - 1] : null;
 
   return (
-    <DeviceContext.Provider value={{ device, readings, latestReading, pairDevice, unpairDevice, isSimulating }}>
+    <DeviceContext.Provider value={{ device, readings, latestReading, pairDevice, unpairDevice, isSimulating, isDemoMode, setIsDemoMode }}>
       {children}
     </DeviceContext.Provider>
   );

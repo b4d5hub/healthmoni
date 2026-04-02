@@ -10,7 +10,7 @@ import { useAuth } from '@/lib/auth-context';
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { device, latestReading, readings } = useDevice();
+  const { device, latestReading, readings, isDemoMode } = useDevice();
 
   const stats = useMemo(() => {
     if (!readings.length) return null;
@@ -54,9 +54,28 @@ export default function Dashboard() {
         <h1 className="text-2xl font-bold text-foreground">
           Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {user?.name}
         </h1>
-        <p className="text-sm text-muted-foreground">
-          {device ? 'Here\'s your health overview' : 'Pair a device to start monitoring'}
-        </p>
+        <div className="mt-1 flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            {device ? 'Here\'s your health overview' : 'Pair a device to start monitoring'}
+          </p>
+          {device && (
+            <div>
+              {isDemoMode ? (
+                <span className="inline-flex items-center rounded-full bg-secondary/10 px-2.5 py-1 text-xs font-semibold text-secondary">
+                  Demo Mode
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-2 rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-semibold text-green-600 dark:text-green-400">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
+                  Live IoT Data
+                </span>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {!device ? (

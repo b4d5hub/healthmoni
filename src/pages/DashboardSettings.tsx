@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 
 export default function DashboardSettings() {
   const { user, updateProfile, changePassword } = useAuth();
-  const { device, unpairDevice } = useDevice();
+  const { device, unpairDevice, isDemoMode, setIsDemoMode } = useDevice();
   const [name, setName] = useState(user?.name || '');
   const [sex, setSex] = useState<'male' | 'female'>(user?.sex || 'male');
   const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(
@@ -226,6 +226,18 @@ export default function DashboardSettings() {
               <p className="text-xs text-muted-foreground">Receive alerts via email when thresholds are crossed</p>
             </div>
             <Switch checked={emailNotif} onCheckedChange={setEmailNotif} />
+          </div>
+        </div>
+
+        {/* Data Source */}
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-card">
+          <h2 className="mb-4 text-lg font-semibold text-foreground">Data Source</h2>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-foreground">Simulated Demo Mode</p>
+              <p className="text-xs text-muted-foreground">Generate simulated vitals data instead of pulling from live IoT device</p>
+            </div>
+            <Switch checked={isDemoMode} onCheckedChange={setIsDemoMode} />
           </div>
         </div>
 
