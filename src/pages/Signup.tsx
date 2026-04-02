@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Heart, Mail, Lock, User, Loader2, CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,8 +21,14 @@ export default function Signup() {
   const [dateOfBirth, setDateOfBirth] = useState<Date>();
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const { signup, loginWithGoogle } = useAuth();
+  const { user, signup, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,10 +40,9 @@ export default function Signup() {
     try {
       await signup(email, password, name, sex, dateOfBirth.toISOString());
       toast.success('Account created!');
-      navigate('/dashboard');
+      // Redirection is handled by useEffect when user state is ready
     } catch {
       toast.error('Signup failed');
-    } finally {
       setLoading(false);
     }
   };
@@ -47,10 +52,9 @@ export default function Signup() {
     try {
       await loginWithGoogle();
       toast.success('Account created!');
-      navigate('/dashboard');
+      // Redirection is handled by useEffect when user state is ready
     } catch {
       toast.error('Google signup failed');
-    } finally {
       setGoogleLoading(false);
     }
   };

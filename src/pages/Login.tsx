@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Heart, Mail, Lock, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,8 +13,14 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const { login, loginWithGoogle } = useAuth();
+  const { user, login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,10 +28,9 @@ export default function Login() {
     try {
       await login(email, password);
       toast.success('Welcome back!');
-      navigate('/dashboard');
+      // Redirection is handled by useEffect when user state is ready
     } catch {
       toast.error('Invalid email or password');
-    } finally {
       setLoading(false);
     }
   };
@@ -35,10 +40,9 @@ export default function Login() {
     try {
       await loginWithGoogle();
       toast.success('Welcome back!');
-      navigate('/dashboard');
+      // Redirection is handled by useEffect when user state is ready
     } catch {
       toast.error('Google login failed');
-    } finally {
       setGoogleLoading(false);
     }
   };
