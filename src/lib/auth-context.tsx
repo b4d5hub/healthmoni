@@ -52,17 +52,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    // Check active sessions and sets the user
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session?.user) {
-        fetchProfile(session.user.id, session.user.email!).then(setUser);
-      } else {
-        setIsLoading(false);
-      }
-    });
-
-    // Listen for changes on auth state (logged in, signed out, etc.)
+    // onAuthStateChange is the single source of truth — it fires on:
+    //   - initial load (INITIAL_SESSION event) regardless of whether user is logged in or not
+    //   - sign in / sign out events
+    // So we only need this one listener. getSession() is NOT needed.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       if (session?.user) {
