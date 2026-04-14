@@ -44,7 +44,9 @@ export default function Dashboard() {
       minTemp: Math.min(...allTemps),
       maxTemp: Math.max(...allTemps),
       avgTemp: parseFloat((allTemps.reduce((a, b) => a + b, 0) / allTemps.length).toFixed(1)),
-      hasFever: latestReading ? latestReading.temperature >= 38.0 : false,
+      hasFever: latestReading ? (latestReading.temperatureStatus === 'fever' || latestReading.temperature >= 38.0) : false,
+      hasHighHr: latestReading ? (latestReading.heartRateStatus === 'high' || latestReading.heartRate > 100) : false,
+      hasLowHr: latestReading ? (latestReading.heartRateStatus === 'low' || latestReading.heartRate < 50) : false,
     };
   }, [readings, latestReading]);
 
@@ -89,9 +91,9 @@ export default function Dashboard() {
               value={latestReading?.heartRate ?? '--'}
               unit="BPM"
               icon={Heart}
-              trend={stats?.trend}
-              trendValue={stats?.trend === 'up' ? '+3 BPM' : stats?.trend === 'down' ? '-2 BPM' : 'Stable'}
-              color="secondary"
+              trend={stats?.hasHighHr ? 'up' : stats?.hasLowHr ? 'down' : stats?.trend}
+              trendValue={stats?.hasHighHr ? 'High' : stats?.hasLowHr ? 'Low' : stats?.trend === 'up' ? '+3 BPM' : stats?.trend === 'down' ? '-2 BPM' : 'Stable'}
+              color={stats?.hasHighHr ? 'destructive' : stats?.hasLowHr ? 'warning' : 'secondary'}
               large
               animate
             />
@@ -128,7 +130,7 @@ export default function Dashboard() {
               <AlertTriangle className="h-5 w-5 text-destructive" />
               <div>
                 <p className="text-sm font-medium text-destructive">Fever Detected</p>
-                <p className="text-xs text-muted-foreground">Current temperature is {latestReading?.temperature}°C – above the 38.0°C threshold.</p>
+                <p className="text-xs text-muted-foreground">Current temperature is {latestReading?.temperature}°C.</p>
               </div>
             </div>
           )}

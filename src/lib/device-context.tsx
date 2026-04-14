@@ -9,6 +9,8 @@ export interface Reading {
   heartRate: number;
   temperature: number;
   hrv: number;
+  heartRateStatus?: string;
+  temperatureStatus?: string;
 }
 
 export interface Device {
@@ -104,13 +106,13 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
   }, [user]);
 
   const deviceId = device?.id;
-  
+
   // Simulation loop
   useEffect(() => {
     if (isDemoMode && isSimulating && deviceId && user) {
       intervalRef.current = setInterval(async () => {
         const r = generateReading();
-        
+
         // 1. Update local state
         setReadings(prev => [...prev.slice(-1000), r]);
         setDevice(prev => prev ? {
@@ -138,26 +140,31 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
           }).eq('id', deviceId);
         }
       }, 5000); // 5 seconds interval for DB sanity
-      
+
       return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
     }
   }, [isDemoMode, isSimulating, deviceId, user]);
 
   // Firebase IoT data loop
   useEffect(() => {
-    if (!isDemoMode && isSimulating && deviceId && user) {
-      const bpmRef = query(ref(rtdb, 'bpm'), limitToLast(1));
-      const tempRef = query(ref(rtdb, 'temperature'), limitToLast(1));
+    if (!isDemoMode && isSimulating && deviceId && device && user) {
+      const serial = device.serialNumber;
+      const bpmRef = query(ref(rtdb, `devices/${serial}/bpm`), limitToLast(1));
+      const tempRef = query(ref(rtdb, `devices/${serial}/temperature`), limitToLast(1));
 
       let currentBpm = readings.length > 0 ? readings[readings.length - 1].heartRate : 70;
       let currentTemp = readings.length > 0 ? readings[readings.length - 1].temperature : 36.5;
+      let currentBpmStatus = readings.length > 0 ? readings[readings.length - 1].heartRateStatus : 'normal';
+      let currentTempStatus = readings.length > 0 ? readings[readings.length - 1].temperatureStatus : 'normal';
 
-      const pushReading = (bpm: number, temp: number) => {
+      const pushReading = (bpm: number, temp: number, bpmStatus?: string, tempStatus?: string) => {
         const newReading: Reading = {
           timestamp: Date.now(),
           heartRate: bpm,
           temperature: temp,
           hrv: Math.round(35 + Math.random() * 40), // Keep HRV simulated as it's not in DB yet
+          heartRateStatus: bpmStatus,
+          temperatureStatus: tempStatus,
         };
         setReadings(prev => [...prev.slice(-1000), newReading]);
         setDevice(prev => prev ? { ...prev, lastSync: Date.now() } : null);
@@ -168,7 +175,8 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
           const val = childSnapshot.val();
           if (val && typeof val.bpm === 'number') {
             currentBpm = val.bpm;
-            pushReading(currentBpm, currentTemp);
+            currentBpmStatus = val.status || currentBpmStatus;
+            pushReading(currentBpm, currentTemp, currentBpmStatus, currentTempStatus);
           }
         });
       });
@@ -178,7 +186,8 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
           const val = childSnapshot.val();
           if (val && typeof val.temperature === 'number') {
             currentTemp = parseFloat(val.temperature.toFixed(1));
-            pushReading(currentBpm, currentTemp);
+            currentTempStatus = val.status || currentTempStatus;
+            pushReading(currentBpm, currentTemp, currentBpmStatus, currentTempStatus);
           }
         });
       });
