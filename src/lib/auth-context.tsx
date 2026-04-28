@@ -52,22 +52,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    // onAuthStateChange is the single source of truth — it fires on:
-    //   - initial load (INITIAL_SESSION event) regardless of whether user is logged in or not
-    //   - sign in / sign out events
-    // So we only need this one listener. getSession() is NOT needed.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session);
-      if (session?.user) {
-        const profile = await fetchProfile(session.user.id, session.user.email!);
-        setUser(profile);
-      } else {
-        setUser(null);
+    let mounted = true;
+
+    async function initializeAuth() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setSession(session);
+        if (session?.user) {
+          try {
+            const profile = await fetchProfile(session.user.id, session.user.email || '');
+            if (mounted) setUser(profile);
+          } catch (err) {
+            console.error('Failed to fetch profile during init:', err);
+            if (mounted) setUser(null); // Fallback so we don't get stuck
+          }
+        } else {
+          if (mounted) setUser(null);
+        }
+      } catch (err) {
+        console.error('Failed to get initial session:', err);
+      } finally {
+        if (mounted) setIsLoading(false);
       }
-      setIsLoading(false);
+    }
+
+    initializeAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (!mounted) return;
+      try {
+        setSession(session);
+        if (session?.user) {
+          const profile = await fetchProfile(session.user.id, session.user.email || '');
+          if (mounted) setUser(profile);
+        } else {
+          if (mounted) setUser(null);
+        }
+      } catch (err) {
+        console.error('Error in onAuthStateChange:', err);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
