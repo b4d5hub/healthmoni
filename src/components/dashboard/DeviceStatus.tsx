@@ -24,7 +24,15 @@ export default function DeviceStatus() {
 
   const battery = Math.round(device.batteryLevel);
   const BatteryIcon = battery < 20 ? BatteryLow : Battery;
-  const lastSync = new Date(device.lastSync).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  
+  let lastSync = 'Never';
+  if (device.lastSync && !isNaN(device.lastSync)) {
+    try {
+      lastSync = new Date(device.lastSync).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    } catch (e) {
+      lastSync = 'Invalid date';
+    }
+  }
 
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-card">

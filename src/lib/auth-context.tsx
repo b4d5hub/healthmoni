@@ -31,24 +31,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchProfile = async (userId: string, email: string): Promise<User> => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
 
-    if (error && error.code !== 'PGRST116') {
-      console.error('Error fetching profile:', error);
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching profile:', error);
+      }
+
+      return {
+        id: userId,
+        email: email,
+        name: data?.name || email.split('@')[0],
+        sex: (data?.sex as 'male' | 'female') || 'male',
+        dateOfBirth: data?.date_of_birth || '1990-01-01',
+        avatar: data?.avatar_url || undefined,
+      };
+    } catch (error) {
+      console.error('Network or unexpected error fetching profile:', error);
+      // Return a fallback profile so the session stays active
+      return {
+        id: userId,
+        email: email,
+        name: email.split('@')[0],
+        sex: 'male',
+        dateOfBirth: '1990-01-01',
+      };
     }
-
-    return {
-      id: userId,
-      email: email,
-      name: data?.name || email.split('@')[0],
-      sex: (data?.sex as 'male' | 'female') || 'male',
-      dateOfBirth: data?.date_of_birth || '1990-01-01',
-      avatar: data?.avatar_url || undefined,
-    };
   };
 
   useEffect(() => {

@@ -76,7 +76,7 @@ export function DeviceProvider({ children }: { children: React.ReactNode }) {
           id: deviceData.id,
           serialNumber: deviceData.serial_number,
           batteryLevel: deviceData.battery_level || 100,
-          lastSync: new Date(deviceData.last_sync || '').getTime(),
+          lastSync: deviceData.last_sync ? new Date(deviceData.last_sync).getTime() : Date.now(),
           paired: true,
         });
 
