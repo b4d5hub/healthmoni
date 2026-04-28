@@ -1,7 +1,7 @@
-import { Battery, BatteryLow, Wifi, Clock } from 'lucide-react';
+import { Battery, BatteryLow, Wifi, Clock, Heart } from 'lucide-react';
 import { useDevice } from '@/lib/device-context';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function DeviceStatus() {
   const { device } = useDevice();
