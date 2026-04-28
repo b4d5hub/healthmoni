@@ -5,18 +5,19 @@ import { Link } from 'react-router-dom';
 
 export default function DeviceStatus() {
   const { device } = useDevice();
+  const navigate = useNavigate();
 
   if (!device) {
     return (
       <div className="rounded-2xl border border-dashed border-border bg-card p-8 text-center shadow-card">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary/10">
-          <Wifi className="h-7 w-7 text-secondary" />
+        <div className="flex h-full flex-col items-center justify-center p-6 text-center">
+          <Heart className="mb-4 h-12 w-12 text-muted-foreground/30" />
+          <h3 className="mb-2 font-semibold text-foreground">No Device Paired</h3>
+          <p className="mb-4 text-sm text-muted-foreground">Scan the QR code on your LifePulse device to start monitoring.</p>
+          <Button onClick={() => navigate('/dashboard/pair')} className="rounded-full shadow-sm">
+            Pair Device
+          </Button>
         </div>
-        <h3 className="mb-2 text-lg font-semibold text-foreground">No device paired</h3>
-        <p className="mb-4 text-sm text-muted-foreground">Scan the QR code on your VitalSync device to start monitoring.</p>
-        <Button className="rounded-full" asChild>
-          <Link to="/dashboard/pair">Pair Device</Link>
-        </Button>
       </div>
     );
   }

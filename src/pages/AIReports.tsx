@@ -166,9 +166,9 @@ export default function AIReports() {
       doc.setFillColor(26, 54, 80);
       doc.rect(0, 0, pageWidth, 40, 'F');
       doc.setTextColor(255, 255, 255);
-      doc.setFontSize(20);
+      doc.setFontSize(24);
       doc.setFont('helvetica', 'bold');
-      doc.text('VitalSync Health Report', margin, 26);
+      doc.text('LifePulse Health Report', margin, 26);
       doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
       doc.text(`Generated: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}  •  Period: ${v?.period || period}  •  Patient: ${user?.name || 'N/A'}`, margin, 35);
@@ -241,11 +241,11 @@ export default function AIReports() {
       const pages = doc.getNumberOfPages();
       for (let i = 1; i <= pages; i++) {
         doc.setPage(i);
-        doc.setFontSize(7);
+        doc.setFontSize(10);
         doc.setTextColor(150);
-        doc.text(`VitalSync Report — Page ${i} of ${pages} — This report is for informational purposes only.`, pageWidth / 2, doc.internal.pageSize.getHeight() - 8, { align: 'center' });
+        doc.text(`LifePulse Report — Page ${i} of ${pages} — This report is for informational purposes only.`, pageWidth / 2, doc.internal.pageSize.getHeight() - 8, { align: 'center' });
       }
-      doc.save(`vitalsync-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+      doc.save(`lifepulse-report-${new Date().toISOString().slice(0, 10)}.pdf`);
       toast({ title: 'PDF exported successfully' });
     } catch (e) {
       toast({ title: 'Export failed', description: String(e), variant: 'destructive' });

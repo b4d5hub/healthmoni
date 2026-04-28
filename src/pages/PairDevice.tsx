@@ -107,8 +107,8 @@ export default function PairDevice() {
               <QrCode className="h-10 w-10 text-secondary" />
             </div>
             <h1 className="mb-2 text-2xl font-bold text-foreground">Pair Your Device</h1>
-            <p className="mb-8 text-sm text-muted-foreground">
-              Scan the QR code on your VitalSync device, or enter the code manually.
+            <p className="mt-2 text-center text-sm text-muted-foreground">
+              Scan the QR code on your LifePulse device, or enter the code manually.
             </p>
 
             {/* Camera view */}

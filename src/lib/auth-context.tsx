@@ -110,7 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(async () => {
     await supabase.auth.signOut();
-    localStorage.removeItem('vitalsync_device'); // Clean up device on logout
+    localStorage.removeItem('lifepulse_device'); // Clean up device on logout
   }, []);
 
   const resetPassword = useCallback(async (email: string) => {

@@ -20,7 +20,7 @@ export default function Landing() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
               <Heart className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="text-lg font-bold text-foreground">VitalSync</span>
+            <span className="text-lg font-bold text-foreground">LifePulse</span>
           </Link>
           <div className="flex items-center gap-3">
             <Button variant="ghost" asChild><Link to="/login">Sign in</Link></Button>
@@ -47,7 +47,7 @@ export default function Landing() {
               Your health, <span className="text-gradient">always in sync</span>
             </h1>
             <p className="mb-10 text-lg text-muted-foreground md:text-xl">
-              VitalSync continuously monitors your heart rate and body temperature, delivering real-time insights and intelligent alerts to keep you and your care team informed.
+              LifePulse continuously monitors your heart rate and body temperature, delivering real-time insights and intelligent alerts to keep you and your care team informed.
             </p>
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Button size="lg" className="gap-2 rounded-full px-8" asChild>
@@ -125,7 +125,7 @@ export default function Landing() {
       {/* Footer */}
       <footer className="border-t border-border py-8">
         <div className="container mx-auto flex items-center justify-between px-4 text-sm text-muted-foreground">
-          <span>© 2026 VitalSync. All rights reserved.</span>
+          <span>© 2026 LifePulse. All rights reserved.</span>
           <div className="flex gap-4">
             <span>Privacy</span>
             <span>Terms</span>

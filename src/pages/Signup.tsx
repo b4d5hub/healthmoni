@@ -41,8 +41,9 @@ export default function Signup() {
       await signup(email, password, name, sex, dateOfBirth.toISOString());
       toast.success('Account created!');
       // Redirection is handled by useEffect when user state is ready
-    } catch {
-      toast.error('Signup failed');
+    } catch (error: any) {
+      console.error('Signup error:', error);
+      toast.error(error.message || 'Signup failed');
       setLoading(false);
     }
   };
@@ -64,7 +65,7 @@ export default function Signup() {
       <div className="hidden w-1/2 items-center justify-center gradient-hero lg:flex">
         <div className="max-w-sm text-center">
           <Heart className="mx-auto mb-6 h-16 w-16 text-primary-foreground animate-heartbeat" />
-          <h2 className="mb-3 text-3xl font-bold text-primary-foreground">VitalSync</h2>
+          <h2 className="mb-3 text-3xl font-bold text-primary-foreground">LifePulse</h2>
           <p className="text-primary-foreground/70">Join thousands tracking their health in real-time.</p>
         </div>
       </div>
@@ -75,7 +76,7 @@ export default function Signup() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
               <Heart className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="text-lg font-bold text-foreground">VitalSync</span>
+            <span className="text-lg font-bold text-foreground">LifePulse</span>
           </Link>
           <h1 className="mb-1 text-2xl font-bold text-foreground">Create your account</h1>
           <p className="mb-8 text-sm text-muted-foreground">Start monitoring your vitals today</p>

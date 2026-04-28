@@ -27,10 +27,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar desktop */}
       <aside className="hidden w-64 flex-col border-r border-border bg-card lg:flex">
         <div className="flex h-16 items-center gap-2 border-b border-border px-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary shadow-sm">
             <Heart className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="text-lg font-bold text-foreground">VitalSync</span>
+          <span className="text-lg font-bold text-foreground">LifePulse</span>
         </div>
         <nav className="flex-1 p-4 space-y-1">
           {navItems.map(item => {
@@ -70,10 +70,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Mobile header */}
         <header className="flex h-14 items-center justify-between border-b border-border bg-card px-4 lg:hidden">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md gradient-primary">
-              <Heart className="h-3.5 w-3.5 text-primary-foreground" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary shadow-sm">
+              <Heart className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-bold text-foreground">VitalSync</span>
+            <span className="font-bold text-foreground">LifePulse</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">

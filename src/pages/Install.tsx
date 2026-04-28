@@ -47,9 +47,9 @@ export default function Install() {
         </div>
 
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Install VitalSync</h1>
+          <h1 className="text-2xl font-bold text-foreground">Install LifePulse</h1>
           <p className="mt-2 text-muted-foreground">
-            Add VitalSync to your home screen for the best experience — instant access, offline support, and native app feel.
+            Add LifePulse to your home screen for the best experience — instant access, offline support, and native app feel.
           </p>
         </div>
 
@@ -57,7 +57,7 @@ export default function Install() {
           <div className="rounded-2xl border border-success/30 bg-success/5 p-6">
             <CheckCircle className="mx-auto h-10 w-10 text-success" />
             <p className="mt-3 font-medium text-foreground">Already installed!</p>
-            <p className="mt-1 text-sm text-muted-foreground">Open VitalSync from your home screen.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Open LifePulse from your home screen.</p>
           </div>
         ) : deferredPrompt ? (
           <Button size="lg" className="w-full gap-2" onClick={handleInstall}>
@@ -79,7 +79,7 @@ export default function Install() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">3</span>
-                <span>Tap <strong>"Add"</strong> to install VitalSync</span>
+                <span>Tap <strong>"Add"</strong> to install LifePulse</span>
               </li>
             </ol>
           </div>

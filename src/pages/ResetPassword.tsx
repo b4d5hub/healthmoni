@@ -63,7 +63,7 @@ export default function ResetPassword() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
             <Heart className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="text-lg font-bold text-foreground">VitalSync</span>
+          <span className="text-lg font-bold text-foreground">LifePulse</span>
         </Link>
 
         <h1 className="mb-1 text-2xl font-bold text-foreground">Set new password</h1>
